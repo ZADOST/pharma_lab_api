@@ -1,14 +1,15 @@
 <?php
-// Set CORS headers so Flutter Web can access the API without origin errors
+// Production CORS Headers - Restrict this later to your specific domain for security
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
 
 class Database {
-    private $host = "127.0.0.1";
-    private $db_name = "pharma_lab_ecosystem";
-    private $username = "root"; // Default XAMPP/MySQL username
-    private $password = "";     // Default XAMPP/MySQL password (leave blank if default)
+    // UPDATE THESE TO YOUR LIVE SERVER CREDENTIALS
+    private $host = "localhost"; // Usually remains localhost on cPanel
+    private $db_name = "pharma_lab_ecosystem"; 
+    private $username = "root"; 
+    private $password = "9889"; 
     public $conn;
 
     public function getConnection() {
@@ -18,7 +19,10 @@ class Database {
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->exec("set names utf8");
         } catch(PDOException $exception) {
-            echo "Database Connection Error: " . $exception->getMessage();
+            // In production, do not echo exact database errors to the screen
+            http_response_code(500);
+            echo json_encode(["message" => "Critical Database Connection Error"]);
+            exit;
         }
         return $this->conn;
     }
